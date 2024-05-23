@@ -9,7 +9,10 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Rules\UniqueEmailInCompany;
-
+use Illuminate\Support\Facades\Session;
+/**
+ * EmployeeController
+ */
 class EmployeeController extends Controller
 {
    /**
@@ -20,7 +23,6 @@ class EmployeeController extends Controller
  */
 public function index(Request $request)
 {
-    // If the request is AJAX, return JSON data for DataTables
     if ($request->ajax()) {
         $employees = Employee::with('company')->get();
         return Datatables::of($employees)
@@ -28,14 +30,10 @@ public function index(Request $request)
             ->addColumn('company', function ($employees) {
                 return $employees->company->companies_name;
             })
-            ->addColumn('action', function ($row) {
-                return '<button onclick="openform(' . htmlspecialchars(json_encode($row)) . ')">Edit</button> <button onclick="deletefun(' . $row->id . ')">Delete</button>';
-            })
             ->rawColumns(['action'])
             ->make(true);
     }
 
-    // If not AJAX, return the view to display all employees
     $employees = Employee::with('company')->get();
     return view('employee.all_employees',compact('employees'));
 }
@@ -47,9 +45,7 @@ public function index(Request $request)
  */
 public function create()
 {
-    // Retrieve all companies to populate the dropdown
     $companies = Company::all();
-    // Return the view for creating a new employee, passing the companies data
     return view('employee.create_employee', compact('companies'));
 }
 
@@ -61,10 +57,8 @@ public function create()
  */
 public function store(StoreEmployeeRequest $request)
 {
-    // Validate the incoming request
     $request->validated();
 
-    // Create a new employee instance with the request data
     $new_employee = new Employee();
     $new_employee->first_name = $request->first_name;
     $new_employee->last_name = $request->last_name;
@@ -73,7 +67,6 @@ public function store(StoreEmployeeRequest $request)
     $new_employee->phone = $request->phone;
     $new_employee->save();
 
-    // Redirect with success message
     return redirect()->route('employees.index')->with('success', 'Employee added successfully');
 }
 
@@ -94,13 +87,11 @@ public function show(string $id)
  * @param string $id The ID of the employee to be edited
  * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
  */
-public function edit(string $id)
+public function edit(Request $request,string $id)
 {
-    // Retrieve all companies to populate the dropdown
+    Session::put('url',url()->previous());
     $companies = Company::all();
-    // Retrieve data of the employee to be edited by its ID
     $employee_data = Employee::findOrFail($id);
-    // Return the view for editing the employee data, passing the employee data and companies data
     return view('employee.edit_employee', compact(['employee_data', 'companies']));
 }
 
@@ -113,12 +104,9 @@ public function edit(string $id)
  */
 public function update(UpdateEmployeeRequest $request, string $id)
 {
-    // Retrieve the employee data to be updated by its ID
     $update_data = Employee::findOrFail($id);
-    // Validate the incoming request
     $request->validated();
 
-    // Update the employee data with the new values
     $update_data->first_name = $request->first_name;
     $update_data->last_name = $request->last_name;
     $update_data->company_id = $request->company_name;
@@ -126,9 +114,9 @@ public function update(UpdateEmployeeRequest $request, string $id)
     $update_data->phone = $request->phone;
     try{
         $update_data->update();
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully');
+        return redirect(Session::get('url'))->with('success', 'Employee updated successfully');
         }catch(\Exception $e){
-            return redirect()->route('employees.index')->with('success', 'Employee not updated email already exist');
+            return redirect(Session::get('url'))->with('success', 'Employee not updated email already exist');
         }
 }
 
@@ -140,9 +128,8 @@ public function update(UpdateEmployeeRequest $request, string $id)
  */
 public function destroy(string $id)
 {
-    // Delete the employee by its ID
     Employee::findOrFail($id)->delete();
-    return redirect()->route('employees.index')->with('success','employee deleted successfully');
+    return redirect(Session::get('url'))->with('success','employee deleted successfully');
 }
 
 }

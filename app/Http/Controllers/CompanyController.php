@@ -31,9 +31,7 @@ class CompanyController extends Controller
         if ($search = $request->input('search')) {
             $query->where('companies_name', 'LIKE', '%' . $search . '%');
         }
-        // Retrieve paginated companies data
         $companies = $query->paginate(5);
-        // Return view with companies data
         return view('company.all_companies', compact('companies'));
     }
 
@@ -44,7 +42,6 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        // Return view for creating a new company
         return view('company.create_company');
     }
 
@@ -56,17 +53,13 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        // Validate the incoming request
         $request->validated();
 
-        // Generate a unique filename for the logo
         $filename = Str::random(20) . '.' . $request->file('logo')->getClientOriginalExtension();
 
-        // Store the logo file in the storage
         $path =  $request->file('logo')->storeAs('public', $filename);
         $url = Storage::url($path);
 
-        // Create a new Company instance and save it to the database
         $new_company = new Company();
         $new_company->companies_name = $request->company_name;
         $new_company->email = $request->email;
@@ -74,12 +67,10 @@ class CompanyController extends Controller
         $new_company->website = $request->website;
         $new_company->save();
 
-        // Send welcome email to the new company
         $companyname = $request->company_name;
         $email = $request->email;
        
         SendEmail::dispatch($email,$companyname);
-        // Redirect with success message
         return redirect()->route('companies.index')->with('success', 'Company added successfully');
     }
 
@@ -99,7 +90,6 @@ class CompanyController extends Controller
  */
 public function edit(string $id)
 {
-    // Retrieve the company data by its ID
     $company_data = Company::findOrFail($id);
     
     // Return the view for editing the company data, passing the retrieved data
@@ -137,15 +127,13 @@ public function update(UpdateCompanyRequest $request, string $id)
         // Store the new logo file
         $path =  $request->file('logo')->storeAs('public', $filename);
         $url = Storage::url($path);
-    } else {
-        // If no new logo is uploaded, keep the existing logo
-        $url = $oldLogoPath;
+        $update_data->logo = $url;
+
     }
 
     // Update the company data with the new values
     $update_data->companies_name = $request->company_name;
     $update_data->email = $request->email;
-    $update_data->logo = $url;
     $update_data->website = $request->website;
     try{
         $update_data->update();
@@ -189,9 +177,6 @@ public function showEmployeeList(Request $request)
             ->addColumn('company', function ($employees) {
                 return $employees->company->companies_name;
             })
-            ->addColumn('action', function ($row) {
-                return '<button onclick="openform(' . htmlspecialchars(json_encode($row)) . ')">Edit</button> <button onclick="deletefun(' . $row->id . ')">Delete</button>';
-            })
             ->rawColumns(['action', 'company'])
             ->make(true);
     }
@@ -209,9 +194,7 @@ public function showEmployeeList(Request $request)
  */
 public function deleted_companies()
 {
-    // Retrieve all deleted companies
     $deletedRecords = Company::onlyTrashed()->get();
-    // Return the view with deleted companies data
     return view('company.removed_companies', compact(['deletedRecords']));
 }
 
@@ -223,15 +206,12 @@ public function deleted_companies()
  */
 public function restore(Request $request)
 {
-    // Find the deleted company by its ID and restore it
     $record = Company::withTrashed()->find($request->company);
     $record->restore();
 
-    // Restore the associated employees
     $record = Employee::onlyTrashed()->where('company_id', $request->company);
     $record->restore();
 
-    // Redirect with success message
     return redirect()->route('companies.index')->with('success', 'Company details restored successfully');
 }
 

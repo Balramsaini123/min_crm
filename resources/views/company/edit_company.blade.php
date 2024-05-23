@@ -40,7 +40,7 @@
                                 @if($company_data->logo)
                                     <img src="{{ $company_data->logo }}" alt="Old Logo" style="width:50px">
                                 @endif
-                                <input type="file" class="form-control-file" id="logo" name="logo">
+                                <input type="file" class="form-control" id="logo" name="logo">
                                 <div class="invalid-feedback" id="logo_error"></div>
                             </div>
                             <div class="form-group">
@@ -61,7 +61,7 @@
         document.getElementById('companyForm').addEventListener('submit', function(event) {
             // Clear previous error messages
             document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-            document.querySelectorAll('.form-control, .form-control-file').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
 
             // Validation flags
             let valid = true;
@@ -84,21 +84,18 @@
             }
 
             // Validate Logo
-            const logo = document.getElementById('logo');
-            if (logo.files.length > 0) {
-                const file = logo.files[0];
-                const fileType = file.type.split('/')[0];
-                if (fileType !== 'image') {
-                    valid = false;
-                    logo.classList.add('is-invalid');
-                    document.getElementById('logo_error').textContent = 'Please upload a valid image file.';
-                }
-            }
+            // const logo = document.getElementById('logo');
+            //     if (!logo.value) {
+            //         valid = false;
+            //         logo.classList.add('is-invalid');
+            //         document.getElementById('logo_error').textContent = 'Please upload a valid image file.';
+            //     }
+            
 
             // Validate Website
             const website = document.getElementById('website');
             const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-            if (website.value.trim() && !urlPattern.test(website.value.trim())) {
+            if (!urlPattern.test(website.value.trim())) {
                 valid = false;
                 website.classList.add('is-invalid');
                 document.getElementById('website_error').textContent = 'Please enter a valid URL.';
@@ -109,5 +106,20 @@
                 event.preventDefault();
             }
         });
+
+        function clearError(event) {
+      const element = event.target;
+      element.classList.remove('is-invalid');
+      const errorElement = document.getElementById(element.id + '_error');
+      if (errorElement) {
+        errorElement.textContent = '';
+      }
+    }
+
+    // Add event listeners to inputs
+    document.getElementById('company_name').addEventListener('input', clearError);
+    document.getElementById('email').addEventListener('input', clearError);
+    // document.getElementById('logo').addEventListener('change', clearError);
+    document.getElementById('website').addEventListener('input', clearError);
     </script>
 @endsection

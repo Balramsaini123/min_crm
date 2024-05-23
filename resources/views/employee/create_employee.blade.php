@@ -123,5 +123,21 @@
         return emailRegex.test(email);
       }
     });
+
+    function clearError(event) {
+      const element = event.target;
+      element.classList.remove('is-invalid');
+      const errorElement = document.getElementById(element.id + '_error');
+      if (errorElement) {
+        errorElement.textContent = '';
+      }
+    }
+
+    // Add event listeners to inputs
+    document.getElementById('first_name').addEventListener('input', clearError);
+    document.getElementById('last_name').addEventListener('input', clearError);
+    document.getElementById('company_name').addEventListener('input', clearError);
+    document.getElementById('email').addEventListener('input', clearError);
+    document.getElementById('phone').addEventListener('input', clearError);
   </script>
 @endsection

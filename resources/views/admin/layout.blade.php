@@ -129,7 +129,7 @@
                     messageElement.remove();
                 }, 500); // match this time to the transition time
             }
-        }, 3000); // Adjust the delay as needed (3000 ms = 3 seconds)
+        }, 2000); // Adjust the delay as needed (3000 ms = 3 seconds)
     </script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
