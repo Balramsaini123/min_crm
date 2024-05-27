@@ -17,7 +17,7 @@
             <h4>Add Employee</h4>
           </div>
           <div class="card-body">
-            <form id="employeeForm" action="{{ route('employees.store') }} " method="POST">
+            <form id="employeeFormcreate" action="{{ route('employees.store') }} " method="POST">
               @csrf
               <div class="form-group">
                 <label for="first_name">First Name</label>
@@ -61,7 +61,7 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
-      $('#employeeForm').submit(function(event) {
+      $('#employeeFormcreate').submit(function(event) {
         var errors = false;
         var firstName = $('#first_name').val();
         var lastName = $('#last_name').val();

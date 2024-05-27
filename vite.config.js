@@ -8,4 +8,10 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+
+    build: {
+        outDir: 'public/validation', // Specify the output directory
+        emptyOutDir: true, // Clean the output directory before each build
+      },
+
 });

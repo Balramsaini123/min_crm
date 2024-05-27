@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .popup-container {
             display: none;
@@ -127,6 +125,7 @@
                 messageElement.style.opacity = '0';
                 setTimeout(function() {
                     messageElement.remove();
+                    window.location.reload();
                 }, 500); // match this time to the transition time
             }
         }, 2000); // Adjust the delay as needed (3000 ms = 3 seconds)
@@ -137,5 +136,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-
+<script src="{{ asset('validation/login.js') }}"></script>
+<script src="{{ asset('validation/createcompany.js') }}"></script>
+<script src="{{ asset('validation/editcompany.js') }}"></script>
+<script src="{{ asset('validation/editemployee.js') }}"></script>
 </html>

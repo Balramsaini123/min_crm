@@ -92,7 +92,6 @@ public function edit(string $id)
 {
     $company_data = Company::findOrFail($id);
     
-    // Return the view for editing the company data, passing the retrieved data
     return view('company.edit_company', compact('company_data'));
 }
 /**
@@ -104,34 +103,26 @@ public function edit(string $id)
  */
 public function update(UpdateCompanyRequest $request, string $id)
 {
-    // Retrieve the company data by its ID
     $update_data = Company::findOrFail($id);
 
-    // Get the path of the old logo
     $oldLogoPath = $update_data->logo;
 
-    // Validate the incoming request
     $request->validated();
 
-    // Check if a new logo file is uploaded
     if ($request->hasFile('logo')) {
-        // Delete the old logo file
         $destination = 'storage/app/public/' . $oldLogoPath;
         if (file::exists($destination)) {
             file::delete($destination);
         }
 
-        // Generate a new unique filename for the logo
         $filename = Str::random(20) . '.' . $request->file('logo')->getClientOriginalExtension();
 
-        // Store the new logo file
         $path =  $request->file('logo')->storeAs('public', $filename);
         $url = Storage::url($path);
         $update_data->logo = $url;
 
     }
 
-    // Update the company data with the new values
     $update_data->companies_name = $request->company_name;
     $update_data->email = $request->email;
     $update_data->website = $request->website;
@@ -151,13 +142,10 @@ public function update(UpdateCompanyRequest $request, string $id)
  */
 public function destroy(string $id)
 {
-    // Delete the company by its ID
     Company::findOrFail($id)->delete();
 
-    // Delete the associated employees
     Employee::where('company_id', $id)->delete();
 
-    // Redirect with success message
     return redirect()->route('companies.index')->with('success', 'Company deleted successfully');
 }
 
@@ -169,7 +157,6 @@ public function destroy(string $id)
  */
 public function showEmployeeList(Request $request)
 {
-    // If the request is AJAX, return JSON data for DataTables
     if ($request->ajax()) {
         $employees = Employee::where('company_id', $request->id)->get();
         return Datatables::of($employees)
@@ -181,7 +168,6 @@ public function showEmployeeList(Request $request)
             ->make(true);
     }
 
-    // If not AJAX, pass the employees data to the view
     $companyId = $request->id;
     $employees = Employee::where('company_id', $request->id)->get();
     return view('company.employeeListOfSelectedCompany', compact('companyId','employees'));
